@@ -1,0 +1,65 @@
+--- A pure implementation of BitBitJump, a "One
+--- Instruction Set Computer". A BBJ machine has an
+--- array of bits as memory (here we use bit shifting
+--- on a Natural number), a word length (here we use 8)
+--- and a program counter (which we'll call N).
+--- The key is that the memory is interpreted as both
+--- an array of bits and an array of words at different
+--- points in the instruction.
+--- The instruction is "bitbitjump", which is applied
+--- over and over. The algorithm is simple:
+---  * Read the Nth and (N+1)th words from memory; call
+---    their values X and Y.
+---  * Read the Xth bit from memory; call its value Z.
+---  * Set the value of the Yth bit in memory to Z.
+---  * Read the (N+2)th word from memory; call its value
+---  * N.
+--- This implementation is "pure" because it cannot do
+--- I/O, and it matches the original sematics of
+--- BitBitJump.
+mod BITBITJUMP is
+	protecting NAT .
+	protecting BOOL .
+
+	vars A B C Mem PC : Nat .
+	var M : Machine .
+
+	sort Machine .
+	op mac : Nat Nat -> Machine [ctor] .
+
+	--- Clears the bits less significant than or equal to the address
+	op _above_ : Nat Nat -> Nat .
+	eq (A) above (B) = (A >> B) << B .
+
+	--- Clears the bits more significant than or equal to the address
+	op _below_ : Nat Nat -> Nat .
+	eq A below 0 = 0 .
+	eq A below B = A rem (1 << B) .
+
+	--- Read a bit from the given address
+	op _[_] : Nat Nat -> Nat .
+	eq A[0] = A rem 2 .
+	eq A[s(B)] = (A >> 1)[B] .
+
+	--- Read an address from the given address
+	op _{_} : Nat Nat -> Nat .
+	eq A{0} = A rem 256 .
+	eq A{s(B)} = (A >> 8){B} .
+
+	op _[_:=_] : Nat Nat Nat -> Nat .
+	eq A[B := C] = ((A >> (B + 1)) << (B + 1)) + (C << B) + (A rem (1 << B)) .
+
+	--- Pure ByteByteJump only has one instruction.
+	--- We read addresses from PC and PC+1, and copy the
+	--- bit at the former to the latter. We then set PC
+	--- to the address at PC+2
+	op bitbit : Machine -> Machine .
+	eq bitbit(mac(Mem, PC)) = mac(Mem[Mem{PC + 1} := Mem[Mem{PC}]], PC) .
+	op jump : Machine -> Machine .
+	eq jump(mac(Mem, PC)) = mac(Mem, Mem{PC + 2}) .
+	op step : Machine Nat -> Machine .
+	eq step(M, 0) = M .
+	ceq step(mac(A, B), s(C)) = mac(A, B) if jump(bitbit(mac(A, B))) == mac(A, B) .
+	ceq step(mac(A, B), s(C)) = step(jump(bitbit(mac(A, B))), C) if jump(bitbit(mac(A, B))) =/= mac(A, B) .
+
+endm
