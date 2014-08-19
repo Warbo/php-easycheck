@@ -1,0 +1,12 @@
+= EasyCheck =
+
+A basic property-checking framework, in the spirit of QuickCheck.
+
+== Getting Started ==
+
+EasyCheck defines three functions:
+
+ - `deftest(string $description, callable $test)` defines a test
+ - `deftests([$description => $test])` maps `deftest` over an associative array
+ - `runtests()` runs all of the defined tests
+
