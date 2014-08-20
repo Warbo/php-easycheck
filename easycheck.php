@@ -12,9 +12,8 @@ defun('sample', function($f, $n) {
 
 defuns(call_user_func(function() {
   $tests = array();
-  $run   = function($entry) {
-             list($test, $arity) = $entry;
-             return call_user_func_array($test, sample('random', $arity));
+  $run   = function($t) {
+             return call_user_func_array($t[0], sample('random', $t[1]));
            };
 
   return array('deftest'  => function($name, $test) use (&$tests) {

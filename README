@@ -2,11 +2,34 @@
 
 A basic property-checking framework, in the spirit of QuickCheck.
 
-== Getting Started ==
-
 EasyCheck defines three functions:
 
- - `deftest(string $description, callable $test)` defines a test
- - `deftests([$description => $test])` maps `deftest` over an associative array
- - `runtests()` runs all of the defined tests
+ - `deftest(string $description, callable $test)` for defining a test
+ - `deftests([$description => $test])` for defining multiple tests
+ - `runtests(null)` for running all tests
 
+== Tests ==
+
+Tests can be any callable and can take any number of arguments; EasyCheck will
+count the required argument number and supply that many random numbers.
+
+Tests can indicate a pass by returning falsy values (false, null, 0, [], '').
+To indicate a failure, return a truthy value; this will usually be an error
+message or some debugging information.
+
+== Usage ==
+
+Internally, tests are kept in an array and keyed by their descriptions, which
+can be any unique string.
+
+`runtests(null)` will execute all tests, returning an array of truthy results
+(ie. the failures).
+
+== Examples ==
+
+    deftest('All ints are > or <=', function($x, $y) {
+                                      $gt  = $x >  $y;
+                                      $lte = $x <= $y;
+                                      return ($gt || $lte)? 0
+                                                          : get_defined_vars();
+                                    });
