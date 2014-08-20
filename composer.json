@@ -1,0 +1,7 @@
+{
+    "name": "warbo/easycheck",
+    "description": "A basic test framework",
+    "license": "CC0-1.0",
+    "autoload": { "files": ["easycheck.php"] },
+    "require": { "warbo/core": "dev-master" }
+}
