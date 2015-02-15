@@ -20,15 +20,13 @@ key_map(function($name, $test) {
   },
 
   'truthy tests fail' => function() {
-    $pre = runtests(null);
-    deftest(0, function() { return true; });
-                 $results = array_diff_key(runtests(null), $pre);
-                 return (array(true) === $results)? 0 : get_defined_vars();
-               },
+    $result = runtests(function() { return true; });
+    return (count($result) === 0)? 0 : get_defined_vars();
+  },
 
   'falsy tests pass' => function() {
     $pre = runtests(null);
-    deftest(1, function() {});
-                 $results = array_diff_key(runtests(null), $pre);
-                 return (array() === $results)? 0 : get_defined_vars();
+    deftest('falsy', function() {});
+                       $results = array_diff_key(runtests(null), $pre);
+                       return (array() === $results)? 0 : get_defined_vars();
   }));

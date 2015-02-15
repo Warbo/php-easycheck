@@ -20,8 +20,10 @@ defuns(call_user_func(function() {
                                $tests[$name] = array($test, arity($test));
                              },
 
-               'runtests' => function($_) use (&$tests, $run) {
-                               return array_filter(array_map($run, $tests));
+               'runtests' => function($t) use (&$tests, $run) {
+                               return is_array($t)
+                                 ? $run($t)
+                                 : array_filter(array_map($run, $tests));
                              },
 
                'deftests' => key_map('deftest'));
